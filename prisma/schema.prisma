@@ -1,0 +1,70 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum LeaveType {
+  ANNUAL
+  SICK
+  UNPAID
+}
+
+enum LeaveStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Employee {
+  id                 String         @id @default(uuid())
+  tenantId           String
+  name               String
+  email              String
+  role               String         @default("EMPLOYEE")
+  annualLeaveBalance Decimal        @default(20) @db.Decimal(5, 1)
+  createdAt          DateTime       @default(now())
+
+  leaveRequests      LeaveRequest[] @relation("EmployeeLeave")
+  approvedRequests   LeaveRequest[] @relation("ApprovedBy")
+  rejectedRequests   LeaveRequest[] @relation("RejectedBy")
+
+  @@unique([tenantId, email])
+  @@index([tenantId])
+}
+
+model LeaveRequest {
+  id                String      @id @default(uuid())
+  tenantId          String
+  employeeId        String
+  leaveType         LeaveType
+  startDate         DateTime    @db.Date
+  endDate           DateTime    @db.Date
+  daysRequested     Decimal     @db.Decimal(5, 1)
+  reason            String?     
+  status            LeaveStatus @default(PENDING)
+  approvedById      String?
+  approvedAt        DateTime?
+  rejectionComment  String?
+  rejectedById      String?
+  rejectedAt        DateTime?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  employee    Employee  @relation("EmployeeLeave", fields: [employeeId], references: [id])
+  approvedBy  Employee? @relation("ApprovedBy",   fields: [approvedById], references: [id])
+  rejectedBy  Employee? @relation("RejectedBy",   fields: [rejectedById], references: [id])
+
+  @@index([tenantId])
+  @@index([employeeId])
+  @@index([status])
+}
