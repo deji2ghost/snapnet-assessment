@@ -9,17 +9,6 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// WHY TWO SEPARATE MOCK OBJECTS (mockTx and mockPrisma)?
-//
-// Inside a $transaction, the service receives `tx` as the argument and calls
-// tx.leaveRequest / tx.employee on it — NOT this.prisma directly.
-// So we need mockTx for everything inside transactions.
-//
-// listLeaveRequests and getLeaveBalance do NOT use a transaction, so they call
-// this.prisma.leaveRequest / this.prisma.employee directly — those go on mockPrisma.
-// ─────────────────────────────────────────────────────────────────────────────
-
 const mockTx = {
   leaveRequest: {
     findFirst:         jest.fn(),
@@ -39,15 +28,11 @@ const mockPrisma = {
   employee:     { findFirst: jest.fn() },
 };
 
-// ── Constants ────────────────────────────────────────────────────────────────
-
 const TENANT_ID   = 'tenant-001';
 const EMPLOYEE_ID = 'emp-001';
 const REQUEST_ID  = 'req-001';
 const APPROVER_ID = 'manager-001';
 
-// dec() creates a numeric object that behaves like Prisma's Decimal.
-// Number(dec(3)) = 3 because Number() calls valueOf() automatically.
 const dec = (n: number) => ({
   valueOf:  () => n,
   toString: () => String(n),
@@ -81,8 +66,6 @@ const mockPendingRequest = {
   updatedAt:        new Date(),
 };
 
-// ── Suite ────────────────────────────────────────────────────────────────────
-
 describe('LeaveRequestService', () => {
   let service: LeaveRequestService;
 
@@ -99,11 +82,8 @@ describe('LeaveRequestService', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
-    // Re-wire after clearAllMocks, which wipes mockImplementation too
     mockPrisma.$transaction.mockImplementation((cb: any) => cb(mockTx));
   });
-
-  // ── submitLeave ────────────────────────────────────────────────────────────
 
   describe('submitLeave', () => {
 
@@ -201,8 +181,8 @@ describe('LeaveRequestService', () => {
           employeeId: EMPLOYEE_ID,
           leaveType:  LeaveType.SICK,
           startDate:  '2027-08-01',
-          endDate:    '2027-08-07', // 7 days
-          reason:     'Too short',  // only 9 chars
+          endDate:    '2027-08-07',
+          reason:     'Too short', 
         }),
       ).rejects.toThrow('at least 20 characters');
     });
@@ -245,8 +225,6 @@ describe('LeaveRequestService', () => {
     });
 
   });
-
-  // ── approveLeave ───────────────────────────────────────────────────────────
 
   describe('approveLeave', () => {
 
@@ -307,8 +285,6 @@ describe('LeaveRequestService', () => {
 
   });
 
-  // ── rejectLeave ────────────────────────────────────────────────────────────
-
   describe('rejectLeave', () => {
 
     it('TEST 13 — rejects a PENDING request with a comment', async () => {
@@ -364,8 +340,6 @@ describe('LeaveRequestService', () => {
 
   });
 
-  // ── listLeaveRequests ──────────────────────────────────────────────────────
-
   describe('listLeaveRequests', () => {
 
     it('TEST 17 — returns all requests sorted by createdAt desc', async () => {
@@ -407,8 +381,6 @@ describe('LeaveRequestService', () => {
     });
 
   });
-
-  // ── getLeaveBalance ────────────────────────────────────────────────────────
 
   describe('getLeaveBalance', () => {
 

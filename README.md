@@ -18,10 +18,6 @@ This starts PostgreSQL 16 on port 5432 with:
 - Password: `postgres`  
 - Database: `peopleflow`
 
-Wait a few seconds for the healthcheck to pass before the next step.
-
----
-
 ### 3. Generate the Prisma client
 ```
 npx prisma generate
