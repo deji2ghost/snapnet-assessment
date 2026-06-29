@@ -5,13 +5,13 @@
 
 
 ### 1. Clone and install dependencies
-
+```
 npm install
-
+```
 ### 2. Start the database
-
+```
 docker compose up -d
-
+```
 
 This starts PostgreSQL 16 on port 5432 with:
 - User: `postgres`
@@ -23,28 +23,28 @@ Wait a few seconds for the healthcheck to pass before the next step.
 ---
 
 ### 3. Generate the Prisma client
-
+```
 npx prisma generate
-
+```
 ### 4. Run database migrations
-
+```
 npx prisma migrate deploy
-
+```
 This creates all tables (`employees`, `leave_requests`) in your PostgreSQL
 database.
 
 ### 5. Seed test data
-
+```
 npx prisma db seed
-
+```
 ### 6. Run tests
-
+```
 npm test
-
+```
 ### 7. Start the development server
-
+```
 npm run start:dev
-
+```
 API is available at: `http://localhost:3000`
 
 ### Environment

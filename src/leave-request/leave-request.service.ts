@@ -4,7 +4,6 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateLeaveRequestDto, LeaveType, RejectLeaveRequestDto } from './dto/leave-request.dto';
-import { Decimal } from '@prisma/client/runtime/client';
 
 @Injectable()
 export class LeaveRequestService {
@@ -64,7 +63,7 @@ export class LeaveRequestService {
       }
 
       if (leaveType === LeaveType.ANNUAL) {
-        if (new Decimal(employee.annualLeaveBalance).lessThan(days)) {
+        if (Number(employee.annualLeaveBalance) < days) {
           throw new UnprocessableEntityException(
             `Insufficient annual leave balance. Requested: ${days} days, Available: ${employee.annualLeaveBalance}`,
           );
