@@ -1,24 +1,17 @@
 ## Getting Started
 
-### Prerequisites
-- Node.js 18+
-- Docker Desktop (running)
+ Node.js 18+
+ Docker Desktop (running)
 
----
 
 ### 1. Clone and install dependencies
 
-```bash
 npm install
-```
-
----
 
 ### 2. Start the database
 
-```bash
 docker compose up -d
-```
+
 
 This starts PostgreSQL 16 on port 5432 with:
 - User: `postgres`
@@ -31,76 +24,41 @@ Wait a few seconds for the healthcheck to pass before the next step.
 
 ### 3. Generate the Prisma client
 
-```bash
 npx prisma generate
-```
-
----
 
 ### 4. Run database migrations
 
-```bash
 npx prisma migrate deploy
-```
 
 This creates all tables (`employees`, `leave_requests`) in your PostgreSQL
 database.
 
----
-
 ### 5. Seed test data
 
-```bash
 npx prisma db seed
-```
+
 ### 6. Run tests
 
-```bash
 npm test
-```
-
----
 
 ### 7. Start the development server
 
-```bash
 npm run start:dev
-```
 
 API is available at: `http://localhost:3000`
 
----
-
 ### Environment
 
-The `.env` file is included at the project root and pre-configured to match
+The .env file is included at the project root and pre-configured to match
 the Docker setup above. No changes needed:
 
 ```env
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/peopleflow"
 ```
-### 6. Run tests
-
-```bash
-npm test
-```
-
----
-
-### 7. Start the development server
-
-```bash
-npm run start:dev
-```
-
-API is available at: `http://localhost:3000`
-
----
 
 Copy the example env file:
-```bash
 cp .env.example .env
-```
+
 
 1. Who can approve leave?
    Any caller who provides a valid X-Approver-Id header can approve or reject a leave request. There is no role enforcement in this implementation, The approverId value is stored on the leave request in a column so you can see who approved it.
